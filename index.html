@@ -21,7 +21,11 @@ button.sub{background:#667}
 .drop{border:2px dashed #99a;border-radius:10px;padding:24px;text-align:center;cursor:pointer;background:#fafbff}
 .drop.on{background:#e8f0ff;border-color:#1a56db}
 .sheet{display:grid;background:#fff;width:190mm;height:277mm;margin:0 auto 16px;box-shadow:0 1px 6px #0002}
-.slip{border:1px dashed #888;display:flex;flex-direction:column;padding:2mm 4mm 2.5mm;overflow:hidden;gap:1.5mm}
+.slip{border:1px dashed #888;display:flex;flex-direction:row;overflow:hidden}
+.part{display:flex;flex-direction:column;padding:2mm 3mm 2.5mm;gap:1.5mm;min-width:0;overflow:hidden}
+.part.l{flex:1.9}
+.part.r{flex:1;border-left:1.5px dashed #555;align-items:stretch}
+.rno{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
 .logos{display:flex;align-items:center;justify-content:space-between;height:5mm;flex:none;border-bottom:1px solid #ddd;padding-bottom:1mm}
 .logos img{height:100%;width:auto;max-width:48%;object-fit:contain}
 .body{flex:1;display:flex;gap:3mm;min-height:0}
@@ -41,6 +45,26 @@ button.sub{background:#667}
  .sheet{box-shadow:none;margin:0;page-break-after:always}
  .sheet:last-child{page-break-after:auto}
 }
+
+.part.l{flex-direction:row;align-items:stretch;gap:3mm}
+.part.l .logos{flex-direction:column;justify-content:center;gap:2mm;width:32mm;height:auto;border-bottom:0;border-right:1px solid #ddd;padding:0 2mm 0 0}
+.part.l .logos img{height:auto;width:100%;max-width:100%;max-height:15mm}
+.part.l .body{flex:1;min-width:0}
+.part{padding:1.5mm 3mm}
+
+.part{position:relative;padding-top:5mm}
+.evt{position:absolute;top:1mm;left:0;right:0;text-align:center;font-size:2.8mm;font-weight:700;color:#1a3a7a;white-space:nowrap;overflow:hidden;letter-spacing:-.02em}
+.part.r .evt{font-size:2.3mm}
+
+.evt{top:0!important;height:4.2mm;line-height:4.2mm;background:#1a56db!important;color:#fff!important;font-weight:800!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.part{padding-top:5.5mm!important}
+
+.evt{font-size:3.5mm!important;height:4.8mm!important;line-height:4.8mm!important}
+.part.r .evt{font-size:3mm!important}
+.part{padding-top:6mm!important}
+
+.part.r .evt{white-space:normal!important;height:7.6mm!important;line-height:3.6mm!important;font-size:2.9mm!important}
+.part.r{padding-top:9mm!important}
 </style>
 </head>
 <body>
@@ -55,8 +79,8 @@ button.sub{background:#667}
 <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
 <div class="row">
 <label>번호 시작 <input type="number" id="start" value="1" min="0"></label>
-<label>한 장당 <select id="cols"><option value="1">1열</option><option value="2" selected>2열</option></select>
- × <select id="rows"><option>6</option><option>7</option><option selected>8</option><option>9</option><option>10</option></select>행</label>
+<label>한 장당 <select id="cols"><option value="1" selected>1열 (한 줄=한 사람)</option></select>
+ × <select id="rows"><option selected>7</option><option>8</option><option>10</option></select>행</label>
 <label><input type="checkbox" id="shuffleOrder"> 출력 순서도 섞기</label>
 <label><input type="checkbox" id="maskBirth"> 생년월일 뒷자리 가리기</label>
 </div>
@@ -126,7 +150,8 @@ function gen(){
  const pages=Math.ceil(items.length/per);
  const digits=String(start+people.length-1).length;
  const slipW=190/cols;
- const noSize=Math.min(slipW*0.5/ (digits*0.6), (277/rows-9)*0.6, 30);
+ const noSize=Math.min(slipW*0.62*0.34/(digits*0.6), (277/rows-9)*0.6, 22);
+ const rSize=Math.min(slipW*0.34*0.8/(digits*0.6), (277/rows-9)*0.7, 30);
  let html='';
  for(let p=0;p<pages;p++){
   html+=`<div class="sheet" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)">`;
@@ -134,13 +159,13 @@ function gen(){
    const it=items[p*per+k];
    if(!it){html+='<div class="slip blank"></div>';continue}
    let b=it.birth; if(mask&&b) b=b.replace(/^(\d{4}).*$/,'$1-**-**');
-   html+=`<div class="slip"><div class="logos"><img src="${LOGO_A}" alt=""><img src="${LOGO_G}" alt=""></div><div class="body"><div class="info-col">
+   html+=`<div class="slip"><div class="part l"><div class="evt">조선대학교 웰에이징대학원 출범식·오픈하우스 추첨권</div><div class="logos"><img src="${LOGO_A}" alt=""><img src="${LOGO_G}" alt=""></div><div class="body"><div class="info-col">
     <div class="f"><span class="k">학적구분</span><span class="v">${esc(it.type)}</span></div>
     <div class="f"><span class="k">학과</span><span class="v">${esc(it.dept)}</span></div>
     <div class="f"><span class="k">학번</span><span class="v">${esc(it.id)}</span></div>
     <div class="f"><span class="k">생년월일</span><span class="v">${esc(b)}</span></div>
     <div class="f nm"><span class="k">성명</span><span class="v">${esc(it.name)}</span></div>
-   </div><div class="no-col"><div class="no" style="font-size:${noSize}mm">${it.no}</div></div></div></div>`;
+   </div><div class="no-col"><div class="no" style="font-size:${noSize}mm">${it.no}</div></div></div></div><div class="part r"><div class="evt">조선대학교 웰에이징대학원<br>출범식·오픈하우스 추첨권</div><div class="logos"><img src="${LOGO_A}" alt=""><img src="${LOGO_G}" alt=""></div><div class="rno"><div class="no" style="font-size:${rSize}mm">${it.no}</div></div></div></div>`;
   }
   html+='</div>';
  }
