@@ -65,6 +65,9 @@ button.sub{background:#667}
 
 .part.r .evt{white-space:normal!important;height:7.6mm!important;line-height:3.6mm!important;font-size:2.9mm!important}
 .part.r{padding-top:9mm!important}
+
+.part.r .evt{white-space:nowrap!important;height:4.8mm!important;line-height:4.8mm!important;padding:0 1mm}
+.part.r{padding-top:6mm!important}
 </style>
 </head>
 <body>
@@ -165,7 +168,7 @@ function gen(){
     <div class="f"><span class="k">학번</span><span class="v">${esc(it.id)}</span></div>
     <div class="f"><span class="k">생년월일</span><span class="v">${esc(b)}</span></div>
     <div class="f nm"><span class="k">성명</span><span class="v">${esc(it.name)}</span></div>
-   </div><div class="no-col"><div class="no" style="font-size:${noSize}mm">${it.no}</div></div></div></div><div class="part r"><div class="evt">조선대학교 웰에이징대학원<br>출범식·오픈하우스 추첨권</div><div class="logos"><img src="${LOGO_A}" alt=""><img src="${LOGO_G}" alt=""></div><div class="rno"><div class="no" style="font-size:${rSize}mm">${it.no}</div></div></div></div>`;
+   </div><div class="no-col"><div class="no" style="font-size:${noSize}mm">${it.no}</div></div></div></div><div class="part r"><div class="evt">조선대학교 웰에이징대학원 출범식·오픈하우스 추첨권</div><div class="logos"><img src="${LOGO_A}" alt=""><img src="${LOGO_G}" alt=""></div><div class="rno"><div class="no" style="font-size:${rSize}mm">${it.no}</div></div></div></div>`;
   }
   html+='</div>';
  }
@@ -174,6 +177,10 @@ function gen(){
  document.getElementById('info').textContent=`총 ${people.length}명 / ${pages}페이지 (번호 ${start}~${start+people.length-1})`;
 }
 function fit(){
+ document.querySelectorAll('.part.r .evt').forEach(e=>{
+  let fs=3;e.style.setProperty('font-size',fs+'mm','important');
+  while(e.scrollWidth>e.clientWidth&&fs>1.2){fs-=0.1;e.style.setProperty('font-size',fs+'mm','important')}
+ });
  document.querySelectorAll('.info-col').forEach(c=>{
   let fs=3.6;c.style.fontSize=fs+'mm';
   while((c.scrollHeight>c.clientHeight+1||c.scrollWidth>c.clientWidth+1)&&fs>1.8){fs-=0.15;c.style.fontSize=fs+'mm'}
